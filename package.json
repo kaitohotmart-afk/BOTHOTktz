@@ -1,0 +1,37 @@
+{
+  "name": "discord-sales-bot",
+  "version": "1.0.0",
+  "description": "Automated Discord sales bot with payment processing, ticket system, and customer management",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "deploy": "vercel --prod",
+    "setup-db": "node scripts/setup-database.js",
+    "register-commands": "node scripts/register-commands.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "sales",
+    "payment",
+    "supabase"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "@supabase/supabase-js": "^2.39.0",
+    "qrcode": "^1.5.3",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.12"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

@@ -1,0 +1,18 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "api/interactions.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/interactions",
+            "dest": "api/interactions.js"
+        }
+    ],
+    "env": {
+        "NODE_ENV": "production"
+    }
+}
