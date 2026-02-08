@@ -20,13 +20,13 @@ export async function createUserTicket(guild, user) {
         }
 
         // Check if user has too many active tickets
-        const activeTicketCount = await getUserTicketCount(user.id);
+        const activeTicketCount = await getUserTicketCount(user.id, guild.id);
         if (activeTicketCount >= MAX_ACTIVE_TICKETS) {
             throw new Error(`You already have ${activeTicketCount} active ticket(s). Maximum allowed: ${MAX_ACTIVE_TICKETS}`);
         }
 
         // Get or create customer record
-        await getOrCreateCustomer(user.id, user.username);
+        await getOrCreateCustomer(user.id, user.username, guild.id);
 
         // Get next ticket number for this user
         const ticketNumber = activeTicketCount + 1;
@@ -91,6 +91,7 @@ export async function createUserTicket(guild, user) {
         // Save ticket to database
         await createTicket({
             ticketId,
+            guildId: guild.id,
             userId: user.id,
             username: user.username,
             channelId: channel.id,

@@ -13,6 +13,7 @@ export async function logStaffAction(actionData) {
         const { data, error } = await supabase
             .from('staff_actions')
             .insert([{
+                guild_id: actionData.guildId,
                 staff_id: actionData.staffId,
                 staff_username: actionData.staffUsername,
                 action_type: actionData.actionType,
@@ -62,11 +63,12 @@ export async function getTicketStaffActions(ticketId) {
 /**
  * Get recent staff actions
  */
-export async function getRecentStaffActions(limit = 50) {
+export async function getRecentStaffActions(guildId, limit = 50) {
     try {
         const { data, error } = await supabase
             .from('staff_actions')
             .select('*')
+            .eq('guild_id', guildId)
             .order('timestamp', { ascending: false })
             .limit(limit);
 

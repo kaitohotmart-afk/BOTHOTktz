@@ -8,13 +8,14 @@ import logger from '../utils/logger.js';
 /**
  * Get or create customer
  */
-export async function getOrCreateCustomer(userId, username) {
+export async function getOrCreateCustomer(userId, username, guildId) {
     try {
         // Try to get existing customer
         let { data, error } = await supabase
             .from('customers')
             .select('*')
             .eq('user_id', userId)
+            .eq('guild_id', guildId)
             .single();
 
         if (error && error.code === 'PGRST116') {
@@ -23,6 +24,7 @@ export async function getOrCreateCustomer(userId, username) {
                 .from('customers')
                 .insert([{
                     user_id: userId,
+                    guild_id: guildId,
                     username: username,
                     total_purchases: 0,
                     total_spent: 0,
@@ -53,9 +55,9 @@ export async function getOrCreateCustomer(userId, username) {
 /**
  * Update customer purchase stats
  */
-export async function updateCustomerPurchase(userId, amount) {
+export async function updateCustomerPurchase(userId, amount, guildId) {
     try {
-        const customer = await getOrCreateCustomer(userId, 'Unknown');
+        const customer = await getOrCreateCustomer(userId, 'Unknown', guildId);
 
         const { data, error } = await supabase
             .from('customers')
@@ -67,6 +69,7 @@ export async function updateCustomerPurchase(userId, amount) {
                 vip_access: true, // Grant VIP access on purchase
             })
             .eq('user_id', userId)
+            .eq('guild_id', guildId)
             .select()
             .single();
 
@@ -86,12 +89,13 @@ export async function updateCustomerPurchase(userId, amount) {
 /**
  * Grant VIP access to customer
  */
-export async function grantVIPAccess(userId) {
+export async function grantVIPAccess(userId, guildId) {
     try {
         const { data, error } = await supabase
             .from('customers')
             .update({ vip_access: true })
             .eq('user_id', userId)
+            .eq('guild_id', guildId)
             .select()
             .single();
 
@@ -111,12 +115,13 @@ export async function grantVIPAccess(userId) {
 /**
  * Get customer by user ID
  */
-export async function getCustomer(userId) {
+export async function getCustomer(userId, guildId) {
     try {
         const { data, error } = await supabase
             .from('customers')
             .select('*')
             .eq('user_id', userId)
+            .eq('guild_id', guildId)
             .single();
 
         if (error && error.code !== 'PGRST116') {
@@ -134,11 +139,12 @@ export async function getCustomer(userId) {
 /**
  * Get all VIP customers
  */
-export async function getVIPCustomers() {
+export async function getVIPCustomers(guildId) {
     try {
         const { data, error } = await supabase
             .from('customers')
             .select('*')
+            .eq('guild_id', guildId)
             .eq('vip_access', true)
             .order('total_spent', { ascending: false });
 
@@ -157,11 +163,12 @@ export async function getVIPCustomers() {
 /**
  * Get customer statistics
  */
-export async function getCustomerStats() {
+export async function getCustomerStats(guildId) {
     try {
         const { data, error } = await supabase
             .from('customers')
-            .select('total_purchases, total_spent');
+            .select('total_purchases, total_spent')
+            .eq('guild_id', guildId);
 
         if (error) {
             logger.error('Error fetching customer stats:', error);

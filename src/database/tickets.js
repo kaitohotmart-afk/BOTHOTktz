@@ -14,6 +14,7 @@ export async function createTicket(ticketData) {
             .from('tickets')
             .insert([{
                 ticket_id: ticketData.ticketId,
+                guild_id: ticketData.guildId,
                 user_id: ticketData.userId,
                 username: ticketData.username,
                 discord_channel_id: ticketData.channelId,
@@ -64,12 +65,13 @@ export async function getTicketById(ticketId) {
 /**
  * Get active tickets for a user
  */
-export async function getUserActiveTickets(userId) {
+export async function getUserActiveTickets(userId, guildId) {
     try {
         const { data, error } = await supabase
             .from('tickets')
             .select('*')
             .eq('user_id', userId)
+            .eq('guild_id', guildId)
             .in('status', ['pending', 'confirmed'])
             .order('created_at', { ascending: false });
 
@@ -154,13 +156,14 @@ export async function updateTicketPayment(ticketId, paymentMethod, amount) {
 /**
  * Get ticket count by user
  */
-export async function getUserTicketCount(userId) {
+export async function getUserTicketCount(userId, guildId) {
     try {
         const { count, error } = await supabase
             .from('tickets')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId)
-            .in('status', ['pending', 'confirmed']);
+            .eq('guild_id', guildId)
+            .in('status', ['pending', 'pending', 'confirmed']);
 
         if (error) {
             logger.error('Error counting user tickets:', error);
@@ -177,11 +180,12 @@ export async function getUserTicketCount(userId) {
 /**
  * Get all pending tickets
  */
-export async function getPendingTickets() {
+export async function getPendingTickets(guildId) {
     try {
         const { data, error } = await supabase
             .from('tickets')
             .select('*')
+            .eq('guild_id', guildId)
             .eq('status', 'pending')
             .order('created_at', { ascending: true });
 

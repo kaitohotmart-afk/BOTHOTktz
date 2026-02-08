@@ -39,13 +39,13 @@ const rest = new REST().setToken(process.env.DISCORD_BOT_TOKEN);
     try {
         console.log(`\n🚀 Started refreshing ${commands.length} application (/) commands.`);
 
-        // Register commands to specific guild (faster for development)
+        // Register commands globally (works for all servers the bot is in)
         const data = await rest.put(
-            Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.GUILD_ID),
+            Routes.applicationCommands(process.env.DISCORD_CLIENT_ID),
             { body: commands },
         );
 
-        console.log(`✅ Successfully reloaded ${data.length} application (/) commands.`);
+        console.log(`✅ Successfully reloaded ${data.length} global application (/) commands.`);
         console.log('\nRegistered commands:');
         data.forEach(cmd => {
             console.log(`  - /${cmd.name}: ${cmd.description}`);

@@ -11,6 +11,7 @@ import {
 import { generateBitcoinQR } from '../utils/qr-generator.js';
 import { isStaff } from '../utils/validators.js';
 import { updateTicketPayment } from '../database/tickets.js';
+import { isGuildWhitelisted } from '../database/whitelist.js';
 import logger from '../utils/logger.js';
 
 export const name = 'interactionCreate';
@@ -18,6 +19,27 @@ export const name = 'interactionCreate';
 export async function execute(interaction) {
     try {
         console.log(`[DEBUG] Interaction received: ${interaction.type} (ID: ${interaction.id})`);
+
+        // Mandatory Whitelist Check (Licensing)
+        if (interaction.guild) {
+            const whitelisted = await isGuildWhitelisted(interaction.guild.id);
+            if (!whitelisted) {
+                logger.warn(`Unauthorized access attempt from server: ${interaction.guild.name} (${interaction.guild.id})`);
+                const licenseMessage = {
+                    embeds: [createErrorEmbed('License Required', '❌ This server does not have an active license to use this bot.\n\nPlease contact the bot owner to purchase a license.').embeds[0]],
+                    ephemeral: true,
+                };
+
+                if (interaction.isRepliable()) {
+                    if (interaction.deferred || interaction.replied) {
+                        await interaction.editReply(licenseMessage);
+                    } else {
+                        await interaction.reply(licenseMessage);
+                    }
+                }
+                return;
+            }
+        }
 
         // Handle button interactions
         if (interaction.isButton()) {

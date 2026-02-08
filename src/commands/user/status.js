@@ -10,7 +10,7 @@ export async function execute(interaction) {
 
 
     try {
-        const tickets = await getUserActiveTickets(interaction.user.id);
+        const tickets = await getUserActiveTickets(interaction.user.id, interaction.guildId);
 
         if (tickets.length === 0) {
             await interaction.editReply({

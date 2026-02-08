@@ -19,21 +19,23 @@ export async function execute(client) {
 
     logger.info('🤖 Bot is ready and online!');
 
-    // Send mega menu to mega-menu channel if it exists
+    // Send mega menu to #mega-menu channel in all guilds the bot is in
     try {
-        const guild = client.guilds.cache.get(process.env.GUILD_ID);
-        if (guild) {
+        client.guilds.cache.forEach(async (guild) => {
             const megaMenuChannel = guild.channels.cache.find(c => c.name === 'mega-menu');
             if (megaMenuChannel) {
                 // Delete old messages
                 const messages = await megaMenuChannel.messages.fetch({ limit: 10 });
-                await megaMenuChannel.bulkDelete(messages.filter(m => m.author.id === client.user.id));
+                const oldMessages = messages.filter(m => m.author.id === client.user.id);
+                if (oldMessages.size > 0) {
+                    await megaMenuChannel.bulkDelete(oldMessages);
+                }
 
                 // Send new mega menu
                 await megaMenuChannel.send(createMegaMenuEmbed());
-                logger.info('Mega menu sent to #mega-menu channel');
+                logger.info(`Mega menu sent to #${megaMenuChannel.name} in guild: ${guild.name}`);
             }
-        }
+        });
     } catch (error) {
         logger.error('Error sending mega menu:', error);
     }

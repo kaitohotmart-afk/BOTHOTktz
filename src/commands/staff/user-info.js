@@ -28,8 +28,8 @@ export async function execute(interaction) {
     try {
         const targetUser = interaction.options.getUser('user');
 
-        const customer = await getCustomer(targetUser.id);
-        const transactions = await getUserTransactions(targetUser.id);
+        const customer = await getCustomer(targetUser.id, interaction.guildId);
+        const transactions = await getUserTransactions(targetUser.id, interaction.guildId);
 
         if (!customer) {
             await interaction.editReply({

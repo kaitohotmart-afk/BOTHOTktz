@@ -24,7 +24,7 @@ export const config = {
 
 // Validate required environment variables
 export function validateConfig() {
-    const required = ['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID', 'GUILD_ID'];
+    const required = ['DISCORD_BOT_TOKEN', 'DISCORD_CLIENT_ID'];
     const missing = required.filter(key => !process.env[key]);
 
     if (missing.length > 0) {

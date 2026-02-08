@@ -21,8 +21,8 @@ export async function execute(interaction) {
 
 
     try {
-        const stats = await getCustomerStats();
-        const pendingTickets = await getPendingTickets();
+        const stats = await getCustomerStats(interaction.guildId);
+        const pendingTickets = await getPendingTickets(interaction.guildId);
 
         await interaction.editReply({
             embeds: [{

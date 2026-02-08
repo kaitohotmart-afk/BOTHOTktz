@@ -14,6 +14,7 @@ export async function createTransaction(transactionData) {
             .from('transactions')
             .insert([{
                 ticket_id: transactionData.ticketId,
+                guild_id: transactionData.guildId,
                 user_id: transactionData.userId,
                 payment_method: transactionData.paymentMethod,
                 amount: transactionData.amount,
@@ -71,12 +72,13 @@ export async function updateTransactionStatus(ticketId, status) {
 /**
  * Get transactions by user ID
  */
-export async function getUserTransactions(userId) {
+export async function getUserTransactions(userId, guildId) {
     try {
         const { data, error } = await supabase
             .from('transactions')
             .select('*')
             .eq('user_id', userId)
+            .eq('guild_id', guildId)
             .order('created_at', { ascending: false });
 
         if (error) {

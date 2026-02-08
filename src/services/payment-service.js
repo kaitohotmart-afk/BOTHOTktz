@@ -18,9 +18,9 @@ export async function confirmPayment(guild, ticket, staffMember, amount = 0) {
 
         // Update customer stats
         if (amount > 0) {
-            await updateCustomerPurchase(ticket.user_id, amount);
+            await updateCustomerPurchase(ticket.user_id, amount, guild.id);
         } else {
-            await grantVIPAccess(ticket.user_id);
+            await grantVIPAccess(ticket.user_id, guild.id);
         }
 
         // Update transaction status if exists
@@ -33,6 +33,7 @@ export async function confirmPayment(guild, ticket, staffMember, amount = 0) {
 
         // Log staff action
         await logStaffAction({
+            guildId: guild.id,
             staffId: staffMember.user.id,
             staffUsername: staffMember.user.username,
             actionType: 'confirm_payment',
@@ -109,6 +110,7 @@ export async function rejectPayment(guild, ticket, staffMember, reason) {
 
         // Log staff action
         await logStaffAction({
+            guildId: guild.id,
             staffId: staffMember.user.id,
             staffUsername: staffMember.user.username,
             actionType: 'reject_payment',
@@ -151,6 +153,7 @@ export async function markDelivered(guild, ticket, staffMember) {
 
         // Log staff action
         await logStaffAction({
+            guildId: guild.id,
             staffId: staffMember.user.id,
             staffUsername: staffMember.user.username,
             actionType: 'mark_delivered',
